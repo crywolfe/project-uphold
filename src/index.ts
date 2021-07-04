@@ -79,7 +79,8 @@ const getRequest = async (RequestEnum: RequestEnum, pairs: string[], oscillation
             currentAsks[pairName] = +response.data.ask;
 
             if (notInitial === RequestEnum) {
-                priceChange(pairName, previousAsks[pairName], currentAsks[pairName], oscillations[pairName]);
+                const output = priceChange(pairName, previousAsks[pairName], currentAsks[pairName], oscillations[pairName]);
+                console.info({output})
             }
             
             previousAsks[pairName] = currentAsks[pairName]
@@ -90,12 +91,15 @@ const getRequest = async (RequestEnum: RequestEnum, pairs: string[], oscillation
     });
 }
 
-const priceChange = ((pairName: string, previousAsk: number, currentAsk: number, oscillation: number): void => {
+export const priceChange = ((pairName: string, previousAsk: number, currentAsk: number, oscillation: number): string => {
     if (currentAsk > previousAsk && Math.abs(1 - currentAsk / previousAsk) > oscillation/100) {
-        console.info(`Alert - Price Change of ${pairName} Ask Up ⬆️ more than ${oscillation}% from ${previousAsk} to ${currentAsk}`);
+        // console.info(`Alert - Price Change of ${pairName} Ask Up ⬆️ more than ${oscillation}% from ${previousAsk} to ${currentAsk}`);
+        return `Alert - Price Change of ${pairName} Ask Up ⬆️ more than ${oscillation}% from ${previousAsk} to ${currentAsk}`;
     } else if (currentAsk < previousAsk && Math.abs(1 - previousAsk / currentAsk) > oscillation/100) {
-        console.info(`Alert - Price Change of ${pairName} Ask Down ⬇️ more than ${oscillation}% from ${previousAsk} to ${currentAsk}`);
+        // console.info(`Alert - Price Change of ${pairName} Ask Down ⬇️ more than ${oscillation}% from ${previousAsk} to ${currentAsk}`);
+        return `Alert - Price Change of ${pairName} Ask Down ⬇️ more than ${oscillation}% from ${previousAsk} to ${currentAsk}`;
     }
+    return ''
 })
 
 const runInterval = (RequestEnum: RequestEnum, pairs: string[], oscillations: Map<string, IOscillation>, interval: number): void => {

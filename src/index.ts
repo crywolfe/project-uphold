@@ -1,34 +1,14 @@
-import express from 'express';
 import axios, { AxiosResponse } from 'axios';
 import inquirer from 'inquirer';
-// maybe use ramda for fx programming compose...
-
-interface IAsk {
-    pair: string;
-    askPrice: number
-}
-
-interface IOscillation {
-    pair: string;
-    oscillation: number
-}
-
-const app = express();
-const PORT = 3000;
+import { RequestEnum } from './enums/RequestEnum';
+import { IAsk } from './interfaces/IAsk';
+import { IOscillation } from './interfaces/IOscillation';
 
 const previousAsks: Map<string, IAsk> = new Map();
 const currentAsks: Map<string, IAsk> = new Map();
 const oscillations: Map<string, IOscillation> = new Map();
 const pairs: string[] = [];
-
-
-app.get('/', (req, res) => {
-    res.send('Landing!');
-});
-
-app.listen(PORT, () => {
-    // console.log(`Listening on http://localhost:${PORT}`);
-});
+const notInitial: RequestEnum = RequestEnum.NOT_INITIAL;
 
 const questions = [
     {
@@ -81,16 +61,15 @@ const setPair = (): void => {
         if (answers.askAgain) {
             setPair();
         } else {
-            getInitialRequest(pairs);
-            getRequest(pairs, oscillations);
-            runInterval(pairs, oscillations, answers.interval);
+            getRequest(RequestEnum.INITIAL, pairs, null);
+            runInterval(RequestEnum.NOT_INITIAL, pairs, oscillations, answers.interval);
         }
     });
 }
 setPair();
 
-const getInitialRequest = async (pairs: string[]): Promise<void> => {
-    
+const getRequest = async (RequestEnum: RequestEnum, pairs: string[], oscillations: Map<string, IOscillation>): Promise<void> => {
+
     const requests = buildRequests(pairs);
 
     await axios.all(requests).then(axios.spread((...responses) => {
@@ -98,26 +77,10 @@ const getInitialRequest = async (pairs: string[]): Promise<void> => {
             const pairName = response.request.path.slice(-7);
 
             currentAsks[pairName] = +response.data.ask;
-            previousAsks[pairName] = currentAsks[pairName]
 
-        })
-    })).catch(err => {
-        console.log(err);
-    });
-
-}
-
-const getRequest = async (pairs: string[], oscillations: Map<string, IOscillation>): Promise<void> => {
-
-    const requests = buildRequests(pairs);
-    
-    await axios.all(requests).then(axios.spread((...responses) => {
-        responses.forEach((response) => {
-            const pairName = response.request.path.slice(-7);
-
-            currentAsks[pairName] = +response.data.ask;
-            
-            priceChange(pairName, previousAsks[pairName], currentAsks[pairName], oscillations[pairName]);
+            if (notInitial === RequestEnum) {
+                priceChange(pairName, previousAsks[pairName], currentAsks[pairName], oscillations[pairName]);
+            }
             
             previousAsks[pairName] = currentAsks[pairName]
 
@@ -135,10 +98,11 @@ const priceChange = ((pairName: string, previousAsk: number, currentAsk: number,
     }
 })
 
-const runInterval = (pairs: string[], oscillations: Map<string, IOscillation>, interval: number): void => {
+const runInterval = (RequestEnum: RequestEnum, pairs: string[], oscillations: Map<string, IOscillation>, interval: number): void => {
     const intervalInMS = interval*1000;
+    
     setInterval(() => {
-        getRequest(pairs, oscillations);
+        getRequest(RequestEnum, pairs, oscillations);
     }, intervalInMS)
 };
 

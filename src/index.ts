@@ -3,7 +3,24 @@ import inquirer from 'inquirer';
 import { RequestEnum } from './enums/RequestEnum';
 import { IAsk } from './interfaces/IAsk';
 import { IOscillation } from './interfaces/IOscillation';
+import { IBotConfig } from './interfaces/IBotConfig';
+import { Sequelize } from 'sequelize';
+import { Price } from './models/prices'
 
+export const sequelize = new Sequelize('uphold_data', 'postgres', 'postgres', {
+    host: 'localhost',
+    dialect: 'postgres',
+});
+
+sequelize.authenticate().then(() => {
+    console.log("DATABASE IS AUTHENTICATED AND ACTIVE");
+    setPair();
+
+}).catch((err) => {
+    console.log(err);
+})
+
+let botConfig = {};
 const previousAsks: Map<string, IAsk> = new Map();
 const currentAsks: Map<string, IAsk> = new Map();
 const oscillations: Map<string, IOscillation> = new Map();
@@ -61,12 +78,17 @@ const setPair = (): void => {
         if (answers.askAgain) {
             setPair();
         } else {
+            botConfig = {
+                timeOfConfig: new Date(Date.now()),
+                pairs,
+                oscillations,
+                interval: answers.interval             
+            };
             getRequest(RequestEnum.INITIAL, pairs, null);
             runInterval(RequestEnum.NOT_INITIAL, pairs, oscillations, answers.interval);
         }
     });
 }
-setPair();
 
 const getRequest = async (RequestEnum: RequestEnum, pairs: string[], oscillations: Map<string, IOscillation>): Promise<void> => {
 
@@ -93,14 +115,23 @@ const getRequest = async (RequestEnum: RequestEnum, pairs: string[], oscillation
 
 export const priceChange = ((pairName: string, previousAsk: number, currentAsk: number, oscillation: number): string => {
     if (currentAsk > previousAsk && Math.abs(1 - currentAsk / previousAsk) > oscillation/100) {
-        // console.info(`Alert - Price Change of ${pairName} Ask Up ⬆️ more than ${oscillation}% from ${previousAsk} to ${currentAsk}`);
+        persistRow(pairName, currentAsk, botConfig);
         return `Alert - Price Change of ${pairName} Ask Up ⬆️ more than ${oscillation}% from ${previousAsk} to ${currentAsk}`;
     } else if (currentAsk < previousAsk && Math.abs(1 - previousAsk / currentAsk) > oscillation/100) {
-        // console.info(`Alert - Price Change of ${pairName} Ask Down ⬇️ more than ${oscillation}% from ${previousAsk} to ${currentAsk}`);
+        persistRow(pairName, currentAsk, botConfig);
         return `Alert - Price Change of ${pairName} Ask Down ⬇️ more than ${oscillation}% from ${previousAsk} to ${currentAsk}`;
     }
     return ''
 })
+
+const persistRow = async (pairName: string, currentAsk: number, botConfig: IBotConfig): Promise<void> => {
+    let row = await Price.create({
+        pair_name: pairName,
+        ask_price: currentAsk,
+        bot_config: botConfig
+    })
+    console.log({row: row.toJSON()});
+}
 
 const runInterval = (RequestEnum: RequestEnum, pairs: string[], oscillations: Map<string, IOscillation>, interval: number): void => {
     const intervalInMS = interval*1000;

@@ -29,6 +29,10 @@
   "dependencies": {
     "@types/inquirer": "^7.3.2",
     "axios": "^0.21.1",
-    "inquirer": "^8.1.1"
+    "inquirer": "^8.1.1",
+    "pg": "^8.6.0",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.6.4",
+    "sequelize-cli": "^6.2.0"
   }
 }

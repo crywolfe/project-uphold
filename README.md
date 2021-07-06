@@ -19,6 +19,11 @@ TBD
 
 TBD
 
+To run the db run the following command in the root of the app.
+`docker-compose up -d`
+
+To connect to the databse directly
+`docker-compose exec db psql -U postgres -d uphold_data`
 
 ## Design
 

@@ -1,0 +1,11 @@
+CREATE DATABASE uphold_data;
+
+CREATE TABLE IF NOT EXISTS prices(
+    id SERIAL PRIMARY KEY,
+    pair_name VARCHAR(7) NOT NULL,
+    ask_price NUMERIC(14, 6) NOT NULL,
+    bot_config JSON NOT NULL,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+

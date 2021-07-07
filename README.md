@@ -14,7 +14,7 @@ There is too much set up and many unknowns that can create problems for an inexp
 
 ### Deployed
 
-The app is deployed on Heroku at the following URL.
+The app is deployed on Heroku at the following URL. However, I just realized that since this app is not a web app, I won't be able to deploy it via Heroku unless I convert the app to a webapp. I would need to add express, create a simple ui that uses a form, displays the alerts on a web browser, rather than console I/O.
 https://thawing-fjord-50659.herokuapp.com/ | https://git.heroku.com/thawing-fjord-50659.git
 ### Docker
 Note: All the commands below need to be run using a terminal shell and done so in the root folder of the app.

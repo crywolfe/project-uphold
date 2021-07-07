@@ -14,7 +14,8 @@ There is too much set up and many unknowns that can create problems for an inexp
 
 ### Deployed
 
-TBD
+The app is deployed on Heroku at the following URL.
+https://thawing-fjord-50659.herokuapp.com/ | https://git.heroku.com/thawing-fjord-50659.git
 ### Docker
 Note: All the commands below need to be run using a terminal shell and done so in the root folder of the app.
 

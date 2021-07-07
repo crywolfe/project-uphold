@@ -1,0 +1,28 @@
+version: '3.4'
+
+services:
+  projectuphold:
+    image: projectuphold
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: development
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 3000:3000
+  db:
+    build:
+      context: ./db
+      dockerfile: ./Dockerfile
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data:delegated
+
+volumes:
+  db-data:

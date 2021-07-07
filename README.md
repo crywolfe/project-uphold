@@ -2,7 +2,7 @@
 
 There are three ways to run this application.
 1. Locally or
-2. Deployed (use Heroku or Next or Vercel) ??
+2. Deployed on Heroku or 
 3. Local via Docker Container
 
 ### Local
@@ -10,19 +10,21 @@ There is too much set up and many unknowns that can create problems for an inexp
 1. Clone this project from Github.
 2. Navigate into the newly created directory.
 3. run `npm install` (assuming the user has npm/node installed)
-4. `npm run start`
+4. run `npm run start`
 
 ### Deployed
 
 TBD
 ### Docker
+Note: All the commands below need to be run using a terminal shell and done so in the root folder of the app.
 
-TBD
+1. Clone this project from Github.
+2. Ensure Docker is installed and running.
+3. Run `docker-compose down --remove-orphans`
+4. Run `docker-compose up -d`
+5. Run `npm run start`
 
-To run the db run the following command in the root of the app.
-`docker-compose up -d`
-
-To connect to the databse directly
+To connect to the database directly
 `docker-compose exec db psql -U postgres -d uphold_data`
 
 ## Design

@@ -28,8 +28,6 @@ Note: All the commands below need to be run using a terminal shell and done so i
 To connect to the database directly
 `docker-compose exec db psql -U postgres -d uphold_data`
 
-## Design
+## Purpose
 
-I decided to make the design a bit more functional in nature rather than object oriented in nature.
-
-I am proficient in both but functional programming has its place in backend services.
+To play around with blockchain, node, text input outside of a web app (terminal text... old school), docker, and deployment.

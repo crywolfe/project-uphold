@@ -30,4 +30,4 @@ To connect to the database directly
 
 ## Purpose
 
-To play around with blockchain, node, text input outside of a web app (terminal text... old school), docker, and deployment.
+To play around with blockchain, node, text input outside of a web app (terminal text... old school), docker, and database deployment.
